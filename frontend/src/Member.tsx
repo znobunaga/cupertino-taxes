@@ -6,12 +6,16 @@ interface CouncilMember {
   bio: string;
   projectsSupported: string[];
   term: string;
+  gender: string;
   image: string; // URL for their image
 }
 
 const Member: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("2020-2024"); // Default to the most recent term
+  const [selectedGender, setSelectedGender] = useState("all");
   const [councilMembers, setCouncilMembers] = useState<CouncilMember[]>([]);
+  const [filteredMembers, setFilteredMembers] = useState<CouncilMember[]>([]);
 
   useEffect(() => {
     // Fetch council member data for the selected term
@@ -28,27 +32,59 @@ const Member: React.FC = () => {
     fetchCouncilMembers();
   }, [selectedTerm]);
 
+  useEffect(() => {
+    // Filter members based on search query and selected gender
+    const filtered = councilMembers.filter((member) => {
+      const matchesSearch = member.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesGender =
+        selectedGender === "all" || member.gender === selectedGender;
+
+      return matchesSearch && matchesGender;
+    });
+
+    setFilteredMembers(filtered);
+  }, [searchQuery, selectedGender, councilMembers]);
+
   return (
     <div className="h-full flex flex-col items-center space-y-6 mt-6">
       {/* Title */}
-      <h1 className="text-4xl font-bold text-bone-white mb-4">
-        Understanding Your Council Members
+      <h1 className="text-5xl font-bold text-bone-white mb-4">
+        Council Members
       </h1>
 
-      {/* Dropdown for selecting council term */}
-      <div className="flex flex-col items-center space-y-4">
-        <label htmlFor="term" className="text-lg font-medium text-bone-white">
-          Select Council Term:
-        </label>
+      {/* Search and Filters */}
+      <div className="w-full max-w-6xl flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        />
+
+        {/* Term Filter */}
         <select
-          id="term"
           value={selectedTerm}
           onChange={(e) => setSelectedTerm(e.target.value)}
-          className="border border-gray-400 rounded p-2 bg-gray-800 text-bone-white"
+          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
           <option value="2020-2024">2020-2024</option>
           <option value="2016-2020">2016-2020</option>
           <option value="2012-2016">2012-2016</option>
+        </select>
+
+        {/* Gender Filter */}
+        <select
+          value={selectedGender}
+          onChange={(e) => setSelectedGender(e.target.value)}
+          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        >
+          <option value="all">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
         </select>
       </div>
 
@@ -58,7 +94,7 @@ const Member: React.FC = () => {
           Council Members ({selectedTerm})
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {councilMembers.map((member, index) => (
+          {filteredMembers.map((member, index) => (
             <div
               key={index}
               className="bg-gray-700 p-4 rounded shadow-lg space-y-4"
