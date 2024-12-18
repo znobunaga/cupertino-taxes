@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #2b3e50; /* Brighter Blue Background */
+  color: #f5f5dc; /* Bone White Text */
+}
+
+/* Additional styling for the container layout */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 1rem;
+  margin-top: -4rem; /* Move the entire content up */
+}
+
+/* Styling for Tino Taxes title */
+.tino-taxes {
+  font-size: 7rem; /* Large Font Size */
+  font-weight: bold;
+  color: #f5f5dc; /* Bone White Text */
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: 0.4rem; /* Spread out letters */
+}
+
+/* Styling for the Home button (White and Underlined) */
+.home-button {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  color: #f5f5dc; /* Bone White */
+  text-decoration: underline;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.home-button:hover {
+  color: #dcdcdc; /* Slightly lighter white on hover */
+}
+
+/* Box layout for User, Member, Projects buttons */
+.box-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem; /* Increase spacing between boxes */
+  margin-top: 2rem;
+}
+
+.box {
+  flex: 1;
+  background-color: #374151; /* Gray Background */
+  padding: 1rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem; /* Consistent Font Size */
+  color: #f5f5dc; /* Bone White Text */
+  letter-spacing: 0.2rem; /* Slightly spread out letters */
+}
+
+.box:hover {
+  background-color: #4b5563; /* Darker Gray on Hover */
+  color: #dcdcdc; /* Slightly lighter white text on hover */
+}
+
+.box a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+}
+
+/* Styling for Center Text */
+.center-text h2 {
+  color: #f5f5dc !important; /* Force Bone White Text */
+  font-size: 1.5rem; /* Adjust font size */
+  font-weight: 600;
+  text-align: center;
+  margin: 2rem 0;
+}
