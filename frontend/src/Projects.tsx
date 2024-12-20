@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 interface ProjectData {
-  year?: number; // Optional for "Overall Trend"
-  proposed: string[];
-  inProgress: string[];
-  completed: string[];
+  id: number;
+  name: string;
+  status: string;
+  start_date: string;
+  end_date: string | null;
+  description: string;
+  budget: string;
 }
 
 const Projects: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // For the search bar
-  const [selectedYear, setSelectedYear] = useState("2024"); // Default to the most recent year
-  const [selectedStatus, setSelectedStatus] = useState("all"); // Filter for project status
-  const [projectData, setProjectData] = useState<ProjectData | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedYear, setSelectedYear] = useState("2024");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
 
   useEffect(() => {
-    // Fetch project data from the backend
     const fetchProjectData = async () => {
       try {
-        const response = await fetch(`/api/projects?year=${selectedYear}`);
-        const data: ProjectData = await response.json();
-        setProjectData(data);
+        const response = await axios.get(`http://localhost:5000/api/projects`, {
+          params: { year: selectedYear },
+        });
+        setProjects(response.data || []);
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
@@ -28,129 +33,66 @@ const Projects: React.FC = () => {
     fetchProjectData();
   }, [selectedYear]);
 
-  const filterProjects = (projects: string[]) => {
-    if (searchQuery.trim()) {
-      return projects.filter((project) =>
-        project.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    return projects;
-  };
+  useEffect(() => {
+    const filterData = () => {
+      const filtered = projects.filter((project) => {
+        const matchesSearch = project.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesStatus =
+          selectedStatus === "all" ||
+          project.status.toLowerCase() === selectedStatus.toLowerCase();
+        return matchesSearch && matchesStatus;
+      });
+      setFilteredProjects(filtered);
+    };
 
-  const getFilteredProjects = () => {
-    if (!projectData) return {};
-    switch (selectedStatus) {
-      case "proposed":
-        return { proposed: filterProjects(projectData.proposed) };
-      case "inProgress":
-        return { inProgress: filterProjects(projectData.inProgress) };
-      case "completed":
-        return { completed: filterProjects(projectData.completed) };
-      default:
-        return {
-          proposed: filterProjects(projectData.proposed),
-          inProgress: filterProjects(projectData.inProgress),
-          completed: filterProjects(projectData.completed),
-        };
-    }
-  };
-
-  const filteredProjects = getFilteredProjects();
+    filterData();
+  }, [searchQuery, selectedStatus, projects]);
 
   return (
     <div className="h-full flex flex-col items-center space-y-6 mt-6">
-      {/* Title */}
       <h1 className="text-5xl font-bold text-bone-white mb-4">Cupertino Projects</h1>
 
-      {/* Search bar and filters */}
-      <div className="flex flex-col items-center space-y-4 w-full max-w-4xl">
-        <div className="flex w-full space-x-4">
-          {/* Search Bar */}
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-grow border border-gray-400 rounded p-2 bg-gray-800 text-bone-white"
-          />
-          {/* Year Filter */}
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="border border-gray-400 rounded p-2 bg-gray-800 text-bone-white"
-          >
-            {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
-              <option key={year} value={year.toString()}>
-                {year}
-              </option>
-            ))}
-          </select>
-          {/* Status Filter */}
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="border border-gray-400 rounded p-2 bg-gray-800 text-bone-white"
-          >
-            <option value="all">All</option>
-            <option value="proposed">Proposed</option>
-            <option value="inProgress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
+      <div className="flex flex-wrap items-center justify-center gap-4 w-full max-w-6xl">
+        <input
+          type="text"
+          placeholder="Search projects..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        />
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          className="min-w-[150px] p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        >
+          <option value="all">All</option>
+          <option value="Proposed">Proposed</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
       </div>
 
-      {/* Display project data */}
-      {projectData ? (
+      {filteredProjects.length > 0 ? (
         <div className="w-full max-w-4xl bg-gray-800 p-6 rounded shadow space-y-6">
-          {/* Proposed Projects */}
-          {filteredProjects.proposed && filteredProjects.proposed.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-semibold text-yellow-300 mb-2">Proposed Projects</h2>
-              <ul className="list-disc pl-6">
-                {filteredProjects.proposed.map((project, index) => (
-                  <li key={index} className="text-lg text-bone-white">
-                    {project}
-                  </li>
-                ))}
-              </ul>
+          {filteredProjects.map((project) => (
+            <div key={project.id} className="bg-gray-700 p-4 rounded shadow">
+              <h2 className="text-xl font-bold text-bone-white">{project.name}</h2>
+              <p className="text-gray-400">{project.description}</p>
+              <p className="text-sm text-gray-400">
+                Budget: ${project.budget} | Status: {project.status}
+              </p>
+              <p className="text-sm text-gray-400">
+                Start: {new Date(project.start_date).toLocaleDateString()}{" "}
+                {project.end_date &&
+                  `| End: ${new Date(project.end_date).toLocaleDateString()}`}
+              </p>
             </div>
-          )}
-
-          {/* In Progress Projects */}
-          {filteredProjects.inProgress && filteredProjects.inProgress.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-semibold text-blue-400 mb-2">In Progress</h2>
-              <ul className="list-disc pl-6">
-                {filteredProjects.inProgress.map((project, index) => (
-                  <li key={index} className="text-lg text-bone-white">
-                    {project}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Completed Projects */}
-          {filteredProjects.completed && filteredProjects.completed.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-semibold text-green-400 mb-2">Completed Projects</h2>
-              <ul className="list-disc pl-6">
-                {filteredProjects.completed.map((project, index) => (
-                  <li key={index} className="text-lg text-bone-white">
-                    {project}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* No Results */}
-          {Object.values(filteredProjects).every((category) => category.length === 0) && (
-            <p className="text-lg text-gray-400">No projects match your search or filters.</p>
-          )}
+          ))}
         </div>
       ) : (
-        <p className="text-lg text-bone-white">Loading project data...</p>
+        <p className="text-lg text-bone-white">No projects found.</p>
       )}
     </div>
   );

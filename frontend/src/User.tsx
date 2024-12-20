@@ -1,120 +1,130 @@
 import React, { useState, useEffect } from "react";
-import { FiDownload } from "react-icons/fi"; // Import a download icon
+import axios from "axios";
 
 interface TaxData {
-  year?: number; // Optional for "Overall Trend"
-  totalTax: number;
-  allocations: { [key: string]: number }; // Example: { "Education": 30, "Infrastructure": 20, "Health": 50 }
+  id: number;
+  fiscal_year: string;
+  total_tax_per_resident: string;
+  population_size: number;
+  law_enforcement: string;
+  public_works: string;
+  parks_recreation: string;
+  administration: string;
+  community_development: string;
+  other_services: string;
+  [key: string]: string | number;
 }
 
 const User: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedYear, setSelectedYear] = useState("2024"); // Default to the most recent year
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [taxData, setTaxData] = useState<TaxData | null>(null);
+  const [selectedYear, setSelectedYear] = useState("2023-2024");
+  const [taxData, setTaxData] = useState<TaxData[]>([]);
+  const [filteredData, setFilteredData] = useState<TaxData | null>(null);
 
   useEffect(() => {
-    // Fetch tax data from the backend
     const fetchTaxData = async () => {
       try {
-        const response = await fetch(
-          `/api/taxes?year=${selectedYear}&category=${selectedCategory}`
+        const response = await axios.get(`http://localhost:5000/api/tax-records`);
+        setTaxData(response.data || []);
+        const defaultYearData = response.data.find(
+          (record: TaxData) => record.fiscal_year === selectedYear
         );
-        const data: TaxData = await response.json();
-        setTaxData(data);
+        setFilteredData(defaultYearData || null);
       } catch (error) {
         console.error("Error fetching tax data:", error);
       }
     };
 
     fetchTaxData();
-  }, [selectedYear, selectedCategory]);
+  }, []);
+
+  useEffect(() => {
+    const yearData = taxData.find((record) => record.fiscal_year === selectedYear);
+    setFilteredData(yearData || null);
+  }, [selectedYear, taxData]);
 
   return (
     <div className="h-full flex flex-col items-center space-y-6 mt-6">
       {/* Title */}
       <h1 className="text-5xl font-bold text-bone-white mb-4">
-        Cupertino Resident Taxes
+        Cupertino Tax Breakdown
       </h1>
 
-      {/* Filters and Search */}
-      <div className="flex flex-wrap items-center justify-center gap-4 w-full max-w-6xl">
-        {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search by keyword..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 min-w-[400px] max-w-[500px] p-2 h-12 border border-gray-400 rounded bg-gray-800 text-bone-white"
-        />
-
-        {/* Category Filter */}
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="min-w-[120px] p-2 h-12 border border-gray-400 rounded bg-gray-800 text-bone-white"
-        >
-          <option value="all">All Categories</option>
-          <option value="law-enforcement">Law Enforcement</option>
-          <option value="public-works">Public Works</option>
-          <option value="parks-recreation">Parks & Recreation</option>
-          <option value="administration">Administration</option>
-          <option value="community-development">Community Development</option>
-          <option value="other-services">Other Services</option>
-        </select>
-
-        {/* Year Filter */}
+      {/* Year Filter */}
+      <div className="flex items-center space-x-4">
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
           className="min-w-[150px] p-2 h-12 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
-          {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
-            <option key={year} value={year.toString()}>
-              {year}
+          {taxData.map((record) => (
+            <option key={record.id} value={record.fiscal_year}>
+              {record.fiscal_year}
             </option>
           ))}
         </select>
-
-        {/* Tax Report Button */}
-        <button
-          className={`flex items-center px-4 h-12 border rounded bg-gray-800 text-bone-white ${
-            selectedYear === "all" ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={selectedYear === "all"}
-          onClick={() => {
-            if (selectedYear !== "all") {
-              // Logic for downloading PDF
-              console.log(`Downloading tax report for ${selectedYear}`);
-            }
-          }}
-        >
-          <FiDownload className="mr-2" />
-          Tax Report
-        </button>
       </div>
 
-      {/* Display tax data */}
-      {taxData ? (
-        <div className="w-full max-w-4xl bg-gray-800 p-6 rounded shadow space-y-6">
-          <h2 className="text-2xl font-semibold mb-4 text-bone-white">
-            Tax Data for {selectedYear}
-          </h2>
-          <p className="text-lg mb-4">
-            Average Tax Paid:{" "}
-            <span className="font-bold text-yellow-300">${taxData.totalTax}</span>
-          </p>
-          <h3 className="text-xl font-medium mb-2">Allocations:</h3>
-          <ul className="list-disc pl-6">
-            {Object.entries(taxData.allocations).map(([key, value]) => (
-              <li key={key} className="text-lg text-bone-white">
-                {key}: {value}%
-              </li>
+      {/* Data Display */}
+      {filteredData ? (
+        <div className="w-full max-w-6xl bg-gray-800 p-6 rounded shadow space-y-6">
+          {/* Total Taxes */}
+          <div className="flex flex-col items-center space-y-2">
+            <h2 className="text-3xl font-semibold text-blue-400">
+              Fiscal Year: {filteredData.fiscal_year}
+            </h2>
+            <p className="text-xl text-bone-white">
+              Total Tax Per Resident: $
+              <span className="font-bold text-green-400">
+                {filteredData.total_tax_per_resident}
+              </span>
+            </p>
+          </div>
+
+          {/* Tax Breakdown */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-4">
+            {[
+              "law_enforcement",
+              "public_works",
+              "parks_recreation",
+              "administration",
+              "community_development",
+              "other_services",
+            ].map((category) => (
+              <div
+                key={category}
+                className="p-4 bg-gray-700 rounded shadow flex flex-col items-center space-y-2"
+              >
+                <p className="text-lg text-bone-white capitalize">
+                  {category.replace("_", " ")}
+                </p>
+                <p className="text-xl font-bold text-green-400">
+                  ${filteredData[category]}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {filteredData[`${category}_percent`]}% of Total Taxes
+                </p>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-6">
+            <h3 className="text-2xl font-semibold text-blue-400 mb-4">
+              Additional Information
+            </h3>
+            <ul className="list-disc pl-6 text-bone-white text-lg">
+              <li>Population Size: {filteredData.population_size}</li>
+              <li>Property Tax Revenue: ${filteredData.property_tax_revenue}</li>
+              <li>Sales Tax Revenue: ${filteredData.sales_tax_revenue}</li>
+              <li>Business Tax Revenue: ${filteredData.business_tax_revenue}</li>
+              <li>Major Initiatives: {filteredData.major_initiatives}</li>
+            </ul>
+          </div>
         </div>
       ) : (
-        <p className="text-lg text-bone-white">Loading tax data...</p>
+        <p className="text-lg text-bone-white">
+          No data available for the selected year.
+        </p>
       )}
     </div>
   );
