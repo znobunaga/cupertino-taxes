@@ -3,27 +3,34 @@ import axios from "axios";
 
 interface ProjectData {
   id: number;
-  name: string;
-  status: string;
+  project_name: string;
+  description: string;
+  fiscal_year: string;
+  department: string;
+  category: string;
+  budget_allocation: string;
+  funding_source: string;
   start_date: string;
   end_date: string | null;
-  description: string;
-  budget: string;
+  status: string;
+  stakeholders: string;
+  community_impact: string;
+  associated_council_members: string;
+  major_initiatives: string;
 }
 
 const Projects: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedYear, setSelectedYear] = useState("2024");
+  const [selectedYear, setSelectedYear] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
+  const [expandedProjectId, setExpandedProjectId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/projects`, {
-          params: { year: selectedYear },
-        });
+        const response = await axios.get(`http://localhost:5000/api/projects`);
         setProjects(response.data || []);
       } catch (error) {
         console.error("Error fetching project data:", error);
@@ -31,27 +38,32 @@ const Projects: React.FC = () => {
     };
 
     fetchProjectData();
-  }, [selectedYear]);
+  }, []);
 
-  useEffect(() => {
-    const filterData = () => {
-      const filtered = projects.filter((project) => {
-        const matchesSearch = project.name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const matchesStatus =
-          selectedStatus === "all" ||
-          project.status.toLowerCase() === selectedStatus.toLowerCase();
-        return matchesSearch && matchesStatus;
-      });
-      setFilteredProjects(filtered);
-    };
+  const toggleDetails = (id: number) => {
+    setExpandedProjectId((prevId) => (prevId === id ? null : id));
+  };
 
-    filterData();
-  }, [searchQuery, selectedStatus, projects]);
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch = project.project_name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesYear =
+      selectedYear === "all" || project.fiscal_year.includes(selectedYear);
+    const matchesStatus =
+      selectedStatus === "all" ||
+      project.status.toLowerCase() === selectedStatus.toLowerCase();
+    const matchesCategory =
+      selectedCategory === "all" ||
+      project.category.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesYear && matchesStatus && matchesCategory;
+  });
+
+  const years = Array.from(new Set(projects.map((project) => project.fiscal_year)));
+  const categories = Array.from(new Set(projects.map((project) => project.category)));
 
   return (
-    <div className="h-full flex flex-col items-center space-y-6 mt-6">
+    <div className="h-full flex flex-col items-center space-y-6 mt-6 px-4">
       <h1 className="text-5xl font-bold text-bone-white mb-4">Cupertino Projects</h1>
 
       <div className="flex flex-wrap items-center justify-center gap-4 w-full max-w-6xl">
@@ -63,31 +75,77 @@ const Projects: React.FC = () => {
           className="flex-1 p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         />
         <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="min-w-[150px] p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        >
+          <option value="all">All Years</option>
+          {years.map((year, index) => (
+            <option key={index} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+        <select
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
           className="min-w-[150px] p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
-          <option value="all">All</option>
+          <option value="all">All Statuses</option>
           <option value="Proposed">Proposed</option>
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
         </select>
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="min-w-[150px] p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((category, index) => (
+            <option key={index} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
 
       {filteredProjects.length > 0 ? (
-        <div className="w-full max-w-4xl bg-gray-800 p-6 rounded shadow space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
           {filteredProjects.map((project) => (
-            <div key={project.id} className="bg-gray-700 p-4 rounded shadow">
-              <h2 className="text-xl font-bold text-bone-white">{project.name}</h2>
-              <p className="text-gray-400">{project.description}</p>
-              <p className="text-sm text-gray-400">
-                Budget: ${project.budget} | Status: {project.status}
+            <div
+              key={project.id}
+              className="bg-gray-700 p-6 rounded shadow hover:shadow-lg transition"
+            >
+              <h2 className="text-lg font-bold text-bone-white">
+                {project.project_name}
+              </h2>
+              <p className="text-sm text-gray-400 mb-2">
+                Department: {project.department}
               </p>
-              <p className="text-sm text-gray-400">
-                Start: {new Date(project.start_date).toLocaleDateString()}{" "}
-                {project.end_date &&
-                  `| End: ${new Date(project.end_date).toLocaleDateString()}`}
+              <p className="text-sm text-gray-400 mb-2">
+                Budget: ${parseFloat(project.budget_allocation).toLocaleString()}
               </p>
+              <p className="text-sm text-gray-400 mb-2">
+                Status: {project.status}
+              </p>
+              <button
+                onClick={() => toggleDetails(project.id)}
+                className="mt-4 px-4 py-2 text-sm bg-blue-500 rounded text-white"
+              >
+                {expandedProjectId === project.id ? "Hide Details" : "View Details"}
+              </button>
+              {expandedProjectId === project.id && (
+                <div className="mt-4 bg-gray-800 p-4 rounded text-white text-sm">
+                  <p>Description: {project.description}</p>
+                  <p>Fiscal Year: {project.fiscal_year}</p>
+                  <p>Funding Source: {project.funding_source}</p>
+                  <p>Stakeholders: {project.stakeholders}</p>
+                  <p>Community Impact: {project.community_impact}</p>
+                  <p>Associated Council Members: {project.associated_council_members}</p>
+                  <p>Major Initiatives: {project.major_initiatives}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
