@@ -5,72 +5,111 @@
 body {
   margin: 0;
   font-family: "Arial", sans-serif;
-  background-color: #2b3e50; /* Brighter Blue Background */
-  color: #f5f5dc; /* Bone White Text */
+  background-color: #2b3e50; /* Background color */
+  color: #f5f5dc; /* Text color */
 }
 
-/* Additional styling for the container layout */
+/* Main container */
 .main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Centered elements */
   height: 100vh;
   padding: 1rem;
-  margin-top: -4rem; /* Move the entire content up */
+  margin-top: -2rem; /* Slightly move up from center */
 }
 
-/* Styling for Tino Taxes title */
+/* Tino Taxes title */
 .tino-taxes {
-  font-size: 7rem; /* Large Font Size */
+  font-size: 5rem; /* Default font size */
   font-weight: bold;
-  color: #f5f5dc; /* Bone White Text */
+  color: #f5f5dc;
   text-align: center;
   margin-bottom: 1rem;
-  letter-spacing: 0.4rem; /* Spread out letters */
+  letter-spacing: 0.3rem;
+  line-height: 1.3; /* Default spacing */
 }
 
-/* Styling for the Home button (White and Underlined) */
+@media (max-width: 768px) {
+  .tino-taxes {
+    font-size: 3.5rem; /* Adjust font size for medium screens */
+    letter-spacing: 0.2rem;
+    line-height: 1.2; /* Slightly increased spacing for readability */
+  }
+}
+
+@media (max-width: 375px) {
+  .tino-taxes {
+    font-size: 3rem; /* Font size for small screens */
+    letter-spacing: 0.1rem;
+    line-height: 1.15; /* Small but readable spacing */
+  }
+}
+
+@media (min-width: 1024px) {
+  .tino-taxes {
+    font-size: 6.5rem; /* Even larger font size for bigger screens */
+    letter-spacing: 0.4rem;
+  }
+}
+
+/* Home button */
 .home-button {
   position: fixed;
   top: 1rem;
   left: 1rem;
-  color: #f5f5dc; /* Bone White */
+  color: #f5f5dc;
   text-decoration: underline;
-  font-size: 1rem;
+  font-size: 1rem; /* Default font size */
   font-weight: bold;
   transition: color 0.3s ease;
 }
 
-.home-button:hover {
-  color: #dcdcdc; /* Slightly lighter white on hover */
+@media (min-width: 768px) {
+  .home-button {
+    font-size: 1.5rem; /* Larger size for bigger screens */
+  }
 }
 
-/* Box layout for User, Member, Projects buttons */
+.home-button:hover {
+  color: #dcdcdc;
+}
+
+/* Box container */
 .box-container {
   display: flex;
-  justify-content: space-between;
-  gap: 2rem; /* Increase spacing between boxes */
-  margin-top: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem; /* Adjusted spacing to move boxes upward */
 }
 
 .box {
   flex: 1;
-  background-color: #374151; /* Gray Background */
+  max-width: 250px;
+  background-color: #374151;
   padding: 1rem;
   text-align: center;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1.2rem; /* Consistent Font Size */
-  color: #f5f5dc; /* Bone White Text */
-  letter-spacing: 0.2rem; /* Slightly spread out letters */
+  font-size: 1.2rem;
+  color: #f5f5dc;
+}
+
+@media (min-width: 1024px) {
+  .box {
+    max-width: 300px; /* Larger size for bigger screens */
+    font-size: 1.5rem; /* Larger font size for bigger screens */
+    padding: 1.5rem;
+  }
 }
 
 .box:hover {
-  background-color: #4b5563; /* Darker Gray on Hover */
-  color: #dcdcdc; /* Slightly lighter white text on hover */
+  background-color: #4b5563;
+  color: #dcdcdc;
 }
 
 .box a {
@@ -79,11 +118,18 @@ body {
   font-weight: bold;
 }
 
-/* Styling for Center Text */
+/* Center Text */
 .center-text h2 {
-  color: #f5f5dc !important; /* Force Bone White Text */
-  font-size: 1.5rem; /* Adjust font size */
+  font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
-  margin: 2rem 0;
+  margin-top: 1rem; /* Slight adjustment to move closer to TINO TAXES */
+  margin-bottom: 2rem;
+  color: #f5f5dc !important;
+}
+
+@media (min-width: 1024px) {
+  .center-text h2 {
+    font-size: 2rem; /* Larger font size for bigger screens */
+  }
 }

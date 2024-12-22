@@ -10,7 +10,10 @@ module.exports = {
         'bone-white': '#f5f5dc', // Add custom color for bone white
         'bright-blue': '#2b3e50', // Add custom background blue
       },
+      screens: {
+        xs: '375px', // Custom screen size for smaller devices
+      },
     },
   },
   plugins: [],
-}
+};

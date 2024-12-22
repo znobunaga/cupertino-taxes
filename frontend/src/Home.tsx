@@ -5,7 +5,9 @@ const Home: React.FC = () => {
   return (
     <div className="main-container">
       <div className="tino-taxes">TINO TAXES</div>
-      <CenterText />
+      <div className="mb-4 sm:mb-8"> {/* Added margin to push the text higher */}
+        <CenterText />
+      </div>
       <div className="box-container">
         <div className="box">
           <a href="/user">Residents</a>

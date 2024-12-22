@@ -11,7 +11,10 @@ const App: React.FC = () => {
       <div className="h-screen">
         {/* Home Button */}
         <nav className="fixed top-4 left-4">
-          <Link to="/" className="home-button">
+          <Link
+            to="/"
+            className="home-button text-sm sm:text-lg lg:text-xl font-bold text-bone-white underline"
+          >
             Home
           </Link>
         </nav>
