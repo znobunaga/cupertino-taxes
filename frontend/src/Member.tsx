@@ -59,199 +59,166 @@ const Member: React.FC = () => {
     return matchesYear && matchesParty && matchesPosition;
   });
 
+  const years = Array.from(
+    new Set(councilMembers.map((member) => member.term_start.split("-")[0]))
+  ).sort((a, b) => parseInt(b) - parseInt(a));
+
+  const parties = Array.from(
+    new Set(councilMembers.map((member) => member.party_affiliation))
+  ).filter((party) => party);
+
+  const positions = Array.from(
+    new Set(councilMembers.map((member) => member.position))
+  ).filter((position) => position);
+
   return (
-    <div className="h-full flex flex-col items-center space-y-6 mt-6">
+    <div className="h-full flex flex-col items-center space-y-6 mt-6 px-4 sm:px-6 lg:px-8">
       <h1 className="text-5xl font-bold text-bone-white mb-4">Council Members</h1>
-      <div className="flex flex-wrap items-center gap-4">
-        {/* Year Filter */}
+
+      {/* Filters */}
+      <div className="flex flex-wrap justify-center items-center gap-4 w-full max-w-6xl">
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
           className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
           <option value="all">All Years</option>
-          {Array.from(
-            new Set(
-              councilMembers.map((member) => member.term_start.split("-")[0])
-            )
-          )
-            .sort((a, b) => parseInt(b) - parseInt(a))
-            .map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
         </select>
 
-        {/* Party Filter */}
         <select
           value={selectedParty}
           onChange={(e) => setSelectedParty(e.target.value)}
           className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
           <option value="all">All Parties</option>
-          {Array.from(new Set(councilMembers.map((member) => member.party_affiliation)))
-            .filter((party) => party) // Exclude null/empty values
-            .map((party) => (
-              <option key={party} value={party}>
-                {party}
-              </option>
-            ))}
+          {parties.map((party) => (
+            <option key={party} value={party}>
+              {party}
+            </option>
+          ))}
         </select>
 
-        {/* Position Filter */}
         <select
           value={selectedPosition}
           onChange={(e) => setSelectedPosition(e.target.value)}
           className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
         >
           <option value="all">All Positions</option>
-          {Array.from(new Set(councilMembers.map((member) => member.position)))
-            .filter((position) => position) // Exclude null/empty values
-            .map((position) => (
-              <option key={position} value={position}>
-                {position}
-              </option>
-            ))}
+          {positions.map((position) => (
+            <option key={position} value={position}>
+              {position}
+            </option>
+          ))}
         </select>
       </div>
 
-      <div className="w-full max-w-6xl">
+      {/* Council Members */}
+      <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMembers.map((member) => (
-              <div key={member.id} className="bg-gray-700 p-4 rounded shadow-lg">
-                <img
-                  src={member.photo_url}
-                  alt={member.name}
-                  className="w-24 h-24 rounded-full mx-auto"
-                />
-                <h2 className="text-xl font-bold text-bone-white text-center">
-                  {member.name}
-                </h2>
-
-                {/* Buttons for expanding sections */}
-                <div className="flex justify-center gap-2 mt-4">
-                  <button
-                    className={`px-2 py-1 text-xs rounded ${
-                      expandedSection?.id === member.id &&
-                      expandedSection.section === "personal"
-                        ? "bg-gray-900 text-bone-white"
-                        : "bg-gray-800 text-gray-300"
-                    }`}
-                    onClick={() =>
-                      setExpandedSection((prev) =>
-                        prev?.id === member.id &&
-                        prev.section === "personal"
-                          ? null
-                          : { id: member.id, section: "personal" }
-                      )
-                    }
-                  >
-                    Personal
-                  </button>
-                  <button
-                    className={`px-2 py-1 text-xs rounded ${
-                      expandedSection?.id === member.id &&
-                      expandedSection.section === "political"
-                        ? "bg-gray-900 text-bone-white"
-                        : "bg-gray-800 text-gray-300"
-                    }`}
-                    onClick={() =>
-                      setExpandedSection((prev) =>
-                        prev?.id === member.id &&
-                        prev.section === "political"
-                          ? null
-                          : { id: member.id, section: "political" }
-                      )
-                    }
-                  >
-                    Political
-                  </button>
-                  <button
-                    className={`px-2 py-1 text-xs rounded ${
-                      expandedSection?.id === member.id &&
-                      expandedSection.section === "contact"
-                        ? "bg-gray-900 text-bone-white"
-                        : "bg-gray-800 text-gray-300"
-                    }`}
-                    onClick={() =>
-                      setExpandedSection((prev) =>
-                        prev?.id === member.id &&
-                        prev.section === "contact"
-                          ? null
-                          : { id: member.id, section: "contact" }
-                      )
-                    }
-                  >
-                    Contact
-                  </button>
-                </div>
-
-                {/* Expanded Content */}
-                {expandedSection?.id === member.id && (
-                  <div className="mt-4">
-                    {expandedSection.section === "personal" && (
-                      <div className="space-y-2">
-                        <h3 className="text-md font-bold text-bone-white">
-                          Personal Details
-                        </h3>
-                        <p className="text-sm text-gray-300">
-                          <strong>Education:</strong> {member.education}
-                        </p>
-                        <p className="text-sm text-gray-300">
-                          <strong>Awards:</strong> {member.awards}
-                        </p>
-                        {member.controversies && (
-                          <p className="text-sm text-gray-300">
-                            <strong>Controversies:</strong> {member.controversies}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {expandedSection.section === "political" && (
-                      <div className="space-y-2">
-                        <h3 className="text-md font-bold text-bone-white">
-                          Political Details
-                        </h3>
-                        <p className="text-sm text-gray-300">
-                          <strong>Key Initiatives:</strong> {member.key_initiatives}
-                        </p>
-                        <p className="text-sm text-gray-300">
-                          <strong>Focus Areas:</strong> {member.focus_areas}
-                        </p>
-                        <p className="text-sm text-gray-300">
-                          <strong>Notable Achievements:</strong>{" "}
-                          {member.notable_achievements}
-                        </p>
-                      </div>
-                    )}
-                    {expandedSection.section === "contact" && (
-                      <div className="space-y-2">
-                        <h3 className="text-md font-bold text-bone-white">
-                          Contact Details
-                        </h3>
-                        <p className="text-sm text-gray-300">
-                          <strong>Email:</strong>{" "}
-                          <a href={`mailto:${member.contact_email}`} className="text-blue-400">
-                            {member.contact_email}
-                          </a>
-                        </p>
-                        <p className="text-sm text-gray-300">
-                          <strong>Phone:</strong>{" "}
-                          <a href={`tel:${member.contact_phone}`} className="text-blue-400">
-                            {member.contact_phone}
-                          </a>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+          filteredMembers.map((member) => (
+            <div key={member.id} className="bg-gray-700 p-6 rounded shadow-lg">
+              <img
+                src={member.photo_url}
+                alt={member.name}
+                className="w-24 h-24 rounded-full mx-auto"
+              />
+              <h2 className="text-xl font-bold text-bone-white text-center mt-2">
+                {member.name}
+              </h2>
+              <p className="text-sm text-gray-400 text-center">{member.position}</p>
+              <p className="text-sm text-gray-400 text-center italic">
+                Previous: {member.previous_positions}
+              </p>
+              <div className="flex justify-center gap-2 mt-4">
+                <button
+                  className="px-4 py-2 text-sm font-bold bg-[#6082B6] text-white rounded"
+                  onClick={() =>
+                    setExpandedSection((prev) =>
+                      prev?.id === member.id && prev.section === "personal"
+                        ? null
+                        : { id: member.id, section: "personal" }
+                    )
+                  }
+                >
+                  Personal
+                </button>
+                <button
+                  className="px-4 py-2 text-sm font-bold bg-[#6082B6] text-white rounded"
+                  onClick={() =>
+                    setExpandedSection((prev) =>
+                      prev?.id === member.id && prev.section === "political"
+                        ? null
+                        : { id: member.id, section: "political" }
+                    )
+                  }
+                >
+                  Political
+                </button>
+                <button
+                  className="px-4 py-2 text-sm font-bold bg-[#6082B6] text-white rounded"
+                  onClick={() =>
+                    setExpandedSection((prev) =>
+                      prev?.id === member.id && prev.section === "contact"
+                        ? null
+                        : { id: member.id, section: "contact" }
+                    )
+                  }
+                >
+                  Contact
+                </button>
               </div>
-            ))}
-          </div>
+              {expandedSection?.id === member.id && (
+                <div className="mt-4 bg-gray-800 p-4 rounded text-white text-sm text-left">
+                  {expandedSection.section === "personal" && (
+                    <>
+                      <h3 className="text-md font-bold underline mb-2">Personal Details</h3>
+                      <p className="mb-2"><strong>Education:</strong> {member.education}</p>
+                      <p className="mb-2"><strong>Awards:</strong> {member.awards}</p>
+                      {member.controversies && (
+                        <p className="mb-2"><strong>Controversies:</strong> {member.controversies}</p>
+                      )}
+                    </>
+                  )}
+                  {expandedSection.section === "political" && (
+                    <>
+                      <h3 className="text-md font-bold underline mb-2">Political Details</h3>
+                      <p className="mb-2"><strong>Key Initiatives:</strong> {member.key_initiatives}</p>
+                      <p className="mb-2"><strong>Key Votes:</strong> {member.key_votes}</p>
+                      <p className="mb-2"><strong>Policy Stances:</strong> {member.policy_stances}</p>
+                      <p className="mb-2"><strong>Supported Projects:</strong> {member.supported_projects}</p>
+                      <p className="mb-2"><strong>Committee Memberships:</strong> {member.committee_memberships}</p>
+                    </>
+                  )}
+                  {expandedSection.section === "contact" && (
+                    <>
+                      <h3 className="text-md font-bold underline mb-2">Contact Details</h3>
+                      <p className="mb-2">
+                        <strong>Email:</strong>{" "}
+                        <a href={`mailto:${member.contact_email}`} className="text-blue-400">
+                          {member.contact_email}
+                        </a>
+                      </p>
+                      <p className="mb-2">
+                        <strong>Phone:</strong>{" "}
+                        <a href={`tel:${member.contact_phone}`} className="text-blue-400">
+                          {member.contact_phone}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
         ) : (
-          <p className="text-gray-400 text-center">No council members found.</p>
+          <p className="text-lg text-bone-white text-center">
+            No council members found.
+          </p>
         )}
       </div>
     </div>
