@@ -63,7 +63,7 @@ const Projects: React.FC = () => {
   const categories = Array.from(new Set(projects.map((project) => project.category)));
 
   return (
-    <div className="h-full flex flex-col items-center space-y-6 mt-6 px-4 sm:px-6 lg:px-8">
+    <div className="h-full flex flex-col items-center space-y-6 mt-6 px-4 sm:px-6 lg:px-8 animate-fade-in">
       <h1 className="text-5xl font-bold text-bone-white mb-4">Cupertino Projects</h1>
 
       {/* Filters */}
