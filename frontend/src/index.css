@@ -130,6 +130,6 @@ body {
 
 @media (min-width: 1024px) {
   .center-text h2 {
-    font-size: 2rem; /* Larger font size for bigger screen */
+    font-size: 2rem; /* Larger font size for bigger screens */
   }
 }
