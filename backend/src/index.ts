@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 import { Pool } from "pg";
 
 dotenv.config();
@@ -20,6 +21,11 @@ const pool = new Pool({
   port: parseInt(process.env.PG_PORT || "5432"),
 });
 
+// Serve images from the /images directory
+const imagesPath = path.join(__dirname, 'images');
+console.log("Serving images from:", imagesPath); // Log the resolved path
+app.use('/images', express.static(imagesPath));
+
 // Error Handling Middleware
 const asyncHandler =
   (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
@@ -29,13 +35,12 @@ const asyncHandler =
 
 // Tax Records
 app.get(
-    "/api/tax-records",
-    asyncHandler(async (req: Request, res: Response) => {
-      const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
-      res.json(result.rows);
-    })
-  );
-
+  "/api/tax-records",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
+    res.json(result.rows);
+  })
+);
 
 // API Endpoint: Get All Council Members
 app.get(
@@ -49,14 +54,12 @@ app.get(
 
 // Projects
 app.get(
-    "/api/projects",
-    asyncHandler(async (req: Request, res: Response) => {
-      const result = await pool.query("SELECT * FROM projects ORDER BY id ASC");
-      res.json(result.rows);
-    })
-  );
-
-
+  "/api/projects",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT * FROM projects ORDER BY id ASC");
+    res.json(result.rows);
+  })
+);
 
 // Error Handling Middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
