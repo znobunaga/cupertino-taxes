@@ -20,8 +20,9 @@ interface CouncilMember {
   controversies: string | null;
   notable_achievements: string;
   focus_areas: string;
-  contact_email: string;
-  contact_phone: string;
+  email: string;
+  phone_number: string | null;
+  current_council_member: boolean;
 }
 
 const Member: React.FC = () => {
@@ -29,6 +30,7 @@ const Member: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState("all");
   const [selectedParty, setSelectedParty] = useState("all");
   const [selectedPosition, setSelectedPosition] = useState("all");
+  const [showCurrentMembers, setShowCurrentMembers] = useState(false);
   const [expandedSection, setExpandedSection] = useState<{
     id: number;
     section: "personal" | "political" | "contact" | null;
@@ -55,8 +57,10 @@ const Member: React.FC = () => {
     const matchesPosition =
       selectedPosition === "all" ||
       member.position.toLowerCase() === selectedPosition.toLowerCase();
+    const matchesCurrentMember =
+      !showCurrentMembers || member.current_council_member;
 
-    return matchesYear && matchesParty && matchesPosition;
+    return matchesYear && matchesParty && matchesPosition && matchesCurrentMember;
   });
 
   const years = Array.from(
@@ -73,14 +77,16 @@ const Member: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col items-center space-y-6 mt-6 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <h1 className="text-5xl font-bold text-bone-white mb-4">Council Members</h1>
+      <h1 className="text-5xl font-bold text-bone-white mb-4 text-center">
+        Council Members
+      </h1>
 
       {/* Filters */}
       <div className="flex flex-wrap justify-center items-center gap-4 w-full max-w-6xl">
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
-          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white w-full sm:w-auto"
         >
           <option value="all">All Years</option>
           {years.map((year) => (
@@ -93,7 +99,7 @@ const Member: React.FC = () => {
         <select
           value={selectedParty}
           onChange={(e) => setSelectedParty(e.target.value)}
-          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white w-full sm:w-auto"
         >
           <option value="all">All Parties</option>
           {parties.map((party) => (
@@ -106,7 +112,7 @@ const Member: React.FC = () => {
         <select
           value={selectedPosition}
           onChange={(e) => setSelectedPosition(e.target.value)}
-          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white"
+          className="p-2 border border-gray-400 rounded bg-gray-800 text-bone-white w-full sm:w-auto"
         >
           <option value="all">All Positions</option>
           {positions.map((position) => (
@@ -115,6 +121,16 @@ const Member: React.FC = () => {
             </option>
           ))}
         </select>
+
+        <label className="flex items-center space-x-2 text-bone-white w-full sm:w-auto">
+          <input
+            type="checkbox"
+            checked={showCurrentMembers}
+            onChange={() => setShowCurrentMembers((prev) => !prev)}
+            className="w-4 h-4"
+          />
+          <span>Current Council Members Only</span>
+        </label>
       </div>
 
       {/* Council Members */}
@@ -134,7 +150,7 @@ const Member: React.FC = () => {
               <p className="text-sm text-gray-400 text-center italic">
                 Previous: {member.previous_positions}
               </p>
-              <div className="flex justify-center gap-2 mt-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
                 <button
                   className="px-4 py-2 text-sm font-bold bg-[#6082B6] text-white rounded"
                   onClick={() =>
@@ -199,14 +215,14 @@ const Member: React.FC = () => {
                       <h3 className="text-md font-bold underline mb-2">Contact Details</h3>
                       <p className="mb-2">
                         <strong>Email:</strong>{" "}
-                        <a href={`mailto:${member.contact_email}`} className="text-blue-400">
-                          {member.contact_email}
+                        <a href={`mailto:${member.email}`} className="text-blue-400">
+                          {member.email}
                         </a>
                       </p>
                       <p className="mb-2">
                         <strong>Phone:</strong>{" "}
-                        <a href={`tel:${member.contact_phone}`} className="text-blue-400">
-                          {member.contact_phone}
+                        <a href={`tel:${member.phone_number}`} className="text-blue-400">
+                          {member.phone_number || "Not Available"}
                         </a>
                       </p>
                     </>

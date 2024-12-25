@@ -157,3 +157,56 @@ body {
 .box-container {
   animation: fadeIn 1.2s ease-in-out;
 }
+
+/* Styling for the "Built by znobunaga" link */
+a {
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #f5f5dc; /* Bone White */
+}
+
+.mt-8 {
+  margin-top: 2rem; /* Space above the text */
+}
+
+.text-gray-400 {
+  color: #9ca3af; /* Light Gray */
+}
+
+.text-bone-white {
+  color: #f5f5dc; /* Bone White */
+}
+
+.transition {
+  transition: color 0.3s ease-in-out;
+}
+
+/* Adjusted spacing for buttons and footer */
+
+/* Margin for the buttons container */
+.box-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem; /* Increased space to move up */
+}
+
+@media (min-width: 1024px) {
+  .box-container {
+    margin-top: 2.5rem; /* Slightly more space for larger screens */
+  }
+}
+
+/* Margin for the "Built by znobunaga" link */
+.mt-12 {
+  margin-top: 3rem; /* Moves it further down */
+}
+
+.sm\:mt-16 {
+  margin-top: 4rem; /* Additional space for medium to larger screens */
+}
+
