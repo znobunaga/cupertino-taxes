@@ -29,7 +29,12 @@ const Projects: React.FC = () => {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/projects`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL; // Use backend URL from environment variables
+        if (!backendUrl) {
+          console.error("Backend URL is not defined. Please check your .env file.");
+          return;
+        }
+        const response = await axios.get(`${backendUrl}/api/projects`);
         setProjects(response.data || []);
       } catch (error) {
         console.error("Error fetching project data:", error);

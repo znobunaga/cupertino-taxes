@@ -39,7 +39,12 @@ const Member: React.FC = () => {
   useEffect(() => {
     const fetchCouncilMembers = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/council-members`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL; // Use environment variable for the backend URL
+        if (!backendUrl) {
+          console.error("Backend URL is not defined. Please check your .env file.");
+          return;
+        }
+        const response = await axios.get(`${backendUrl}/api/council-members`);
         setCouncilMembers(response.data);
       } catch (error) {
         console.error("Error fetching council member data:", error);
