@@ -22,9 +22,9 @@ const pool = new Pool({
 });
 
 // Serve images from the /images directory
-const imagesPath = path.join(__dirname, 'images');
+const imagesPath = path.join(__dirname, "images");
 console.log("Serving images from:", imagesPath); // Log the resolved path
-app.use('/images', express.static(imagesPath));
+app.use("/images", express.static(imagesPath));
 
 // Error Handling Middleware
 const asyncHandler =
@@ -61,9 +61,22 @@ app.get(
   })
 );
 
+// Test Database Connection
+app.get("/api/test-db", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ message: "Database connection successful!", time: result.rows[0].now });
+  } catch (err) {
+    const error = err as Error; // Explicitly cast to Error
+    console.error("Database connection error:", error.message);
+    res.status(500).json({ error: "Failed to connect to the database" });
+  }
+});
+
 // Error Handling Middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error("Unhandled error:", err.message);
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  const error = err as Error; // Explicitly cast to Error
+  console.error("Unhandled error:", error.message);
   res.status(500).json({ error: "Internal server error" });
 });
 
