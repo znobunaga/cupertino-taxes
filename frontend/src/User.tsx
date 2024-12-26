@@ -41,7 +41,8 @@ const User: React.FC = () => {
   useEffect(() => {
     const fetchTaxData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/tax-records`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+        const response = await axios.get(`${backendUrl}/api/tax-records`);
         setTaxData(response.data || []);
       } catch (error) {
         console.error("Error fetching tax data:", error);

@@ -9,17 +9,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:3000" }));
-app.use(express.json());
 
 // PostgreSQL Pool
 const pool = new Pool({
-  user: process.env.PG_USER || "postgres",
-  host: process.env.PG_HOST || "localhost",
-  database: process.env.PG_DATABASE || "cupertino_taxes",
-  password: process.env.PG_PASSWORD || "your_password",
-  port: parseInt(process.env.PG_PORT || "5432"),
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for Railway
+  },
 });
+
+app.use(cors({ origin: "http://localhost:3000" }));
+app.use(express.json());
 
 // Serve images from the /images directory
 const imagesPath = path.join(__dirname, "images");
@@ -33,34 +33,6 @@ const asyncHandler =
     fn(req, res, next).catch(next);
   };
 
-// Tax Records
-app.get(
-  "/api/tax-records",
-  asyncHandler(async (req: Request, res: Response) => {
-    const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
-    res.json(result.rows);
-  })
-);
-
-// API Endpoint: Get All Council Members
-app.get(
-  "/api/council-members",
-  asyncHandler(async (req: Request, res: Response) => {
-    const query = `SELECT * FROM council_members ORDER BY id ASC`;
-    const result = await pool.query(query);
-    res.json(result.rows);
-  })
-);
-
-// Projects
-app.get(
-  "/api/projects",
-  asyncHandler(async (req: Request, res: Response) => {
-    const result = await pool.query("SELECT * FROM projects ORDER BY id ASC");
-    res.json(result.rows);
-  })
-);
-
 // Test Database Connection
 app.get("/api/test-db", async (req, res) => {
   try {
@@ -72,6 +44,15 @@ app.get("/api/test-db", async (req, res) => {
     res.status(500).json({ error: "Failed to connect to the database" });
   }
 });
+
+// Tax Records
+app.get(
+  "/api/tax-records",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
+    res.json(result.rows);
+  })
+);
 
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
