@@ -18,8 +18,6 @@ const pool = new Pool({
   },
 });
 
-app.use(cors({ origin: "http://localhost:3000" }));
-app.use(express.json());
 
 // Serve images from the /images directory
 const imagesPath = path.join(__dirname, "images");
@@ -59,9 +57,4 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   const error = err as Error; // Explicitly cast to Error
   console.error("Unhandled error:", error.message);
   res.status(500).json({ error: "Internal server error" });
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
 });
