@@ -18,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 
 // Serve images from the /images directory
