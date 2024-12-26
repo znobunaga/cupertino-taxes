@@ -41,16 +41,21 @@ const User: React.FC = () => {
   useEffect(() => {
     const fetchTaxData = async () => {
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL; // Rely solely on the .env value
+        if (!backendUrl) {
+          console.error("Backend URL is not defined. Please check your .env file.");
+          return;
+        }
         const response = await axios.get(`${backendUrl}/api/tax-records`);
         setTaxData(response.data || []);
       } catch (error) {
         console.error("Error fetching tax data:", error);
       }
     };
-
+  
     fetchTaxData();
   }, []);
+  
 
   useEffect(() => {
     const yearData = taxData.find((record) => record.fiscal_year === filters.year);
