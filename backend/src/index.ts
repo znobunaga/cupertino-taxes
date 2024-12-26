@@ -18,7 +18,7 @@ const pool = new Pool({
 });
 
 // CORS Configuration (replace with your Vercel URL in production)
-const CORS_ALLOWED_ORIGIN = "https://cupertino-taxes.vercel.app/"; // Replace with "https://your-frontend.vercel.app" in production
+const CORS_ALLOWED_ORIGIN = "https://cupertino-taxes.vercel.app"; // Replace with "https://your-frontend.vercel.app" in production
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
