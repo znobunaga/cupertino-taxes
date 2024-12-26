@@ -18,6 +18,8 @@ const pool = new Pool({
   },
 });
 
+app.use(cors({ origin: "*" }));
+app.use(express.json());
 
 // Serve images from the /images directory
 const imagesPath = path.join(__dirname, "images");
