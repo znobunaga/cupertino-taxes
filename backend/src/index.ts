@@ -22,8 +22,8 @@ const CORS_ALLOWED_ORIGIN = "https://cupertino-taxes.vercel.app"; // Replace wit
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
-// Serve images from the /images directory
-const imagesPath = path.join(__dirname, "images");
+// Serve images from the /dist/images directory
+const imagesPath = path.resolve(__dirname, "images");
 console.log("Serving images from:", imagesPath); // Log the resolved path
 app.use("/images", express.static(imagesPath));
 
@@ -52,7 +52,7 @@ app.get(
   })
 );
 
-// council member Endpoint
+// Council Members Endpoint
 app.get(
   "/api/council-members",
   asyncHandler(async (req: Request, res: Response) => {
@@ -63,6 +63,11 @@ app.get(
     return res.json(result.rows);
   })
 );
+
+// Debug Route for Images Path
+app.get("/debug-images-path", (req, res) => {
+  res.json({ resolvedImagesPath: imagesPath });
+});
 
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -77,7 +82,3 @@ app.listen(PORT, () => {
 });
 
 console.log("Resolved images path:", imagesPath);
-
-app.get("/debug-path", (req, res) => {
-  res.json({ resolvedImagesPath: imagesPath });
-});
