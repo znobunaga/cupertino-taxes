@@ -8,17 +8,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// PostgreSQL Pool
+// PostgreSQL Pool Configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false, // Use SSL in production
 });
 
 // Log current environment
 console.log("Running in environment:", process.env.NODE_ENV || "development");
 
 // CORS Configuration
-const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN;
+const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN || "*"; // Fallback to allow all origins if not specified
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
@@ -34,7 +34,7 @@ app.get(
   "/api/test-db",
   asyncHandler(async (req: Request, res: Response) => {
     const result = await pool.query("SELECT NOW()");
-    return res.json({ message: "Database connection successful!", time: result.rows[0].now });
+    res.json({ message: "Database connection successful!", time: result.rows[0].now });
   })
 );
 
@@ -46,7 +46,7 @@ app.get(
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No tax records found." });
     }
-    return res.json(result.rows);
+    res.json(result.rows);
   })
 );
 
@@ -58,7 +58,7 @@ app.get(
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No council members found." });
     }
-    return res.json(result.rows);
+    res.json(result.rows);
   })
 );
 
