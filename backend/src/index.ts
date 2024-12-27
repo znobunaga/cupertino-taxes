@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path";
 import { Pool } from "pg";
 
 dotenv.config();
@@ -12,9 +11,7 @@ const PORT = process.env.PORT || 5000;
 // PostgreSQL Pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // Required for Render
-  },
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
 // Log current environment
@@ -24,11 +21,6 @@ console.log("Running in environment:", process.env.NODE_ENV || "development");
 const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN;
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
-
-// Commented Out: Serve images from the /dist/images directory
-// const imagesPath = path.resolve(__dirname, "images");
-// console.log("Serving images from:", imagesPath);
-// app.use("/images", express.static(imagesPath));
 
 // Error Handling Middleware for Async Functions
 const asyncHandler =
@@ -69,16 +61,6 @@ app.get(
     return res.json(result.rows);
   })
 );
-
-// Commented Out: Debug Route for Images Path
-// app.get("/debug-images-path", (req, res) => {
-//   res.json({ resolvedImagesPath: imagesPath });
-// });
-
-// Commented Out: Test Serving a Single Image
-// app.get("/test-image", (req, res) => {
-//   res.sendFile(path.resolve(imagesPath, "barry-chang.jpg"));
-// });
 
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
