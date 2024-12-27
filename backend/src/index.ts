@@ -75,3 +75,9 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+console.log("Resolved images path:", imagesPath);
+
+app.get("/debug-path", (req, res) => {
+  res.json({ resolvedImagesPath: imagesPath });
+});
