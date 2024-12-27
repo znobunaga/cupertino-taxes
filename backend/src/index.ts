@@ -54,7 +54,7 @@ app.get(
 
 // council member Endpoint
 app.get(
-  "/api/council_members",
+  "/api/council-members",
   asyncHandler(async (req: Request, res: Response) => {
     const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
     if (result.rows.length === 0) {
