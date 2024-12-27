@@ -17,7 +17,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "copyfiles": "^2.4.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -26,7 +27,6 @@
     "@types/pg": "^8.11.10",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
-    "copyfiles": "^2.4.1"
+    "typescript": "^5.7.2"
   }
 }

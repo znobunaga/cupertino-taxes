@@ -13,18 +13,21 @@ const PORT = process.env.PORT || 5000;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Required for Railway
+    rejectUnauthorized: false, // Required for Render
   },
 });
 
-// CORS Configuration (replace with your Vercel URL in production)
-const CORS_ALLOWED_ORIGIN = "https://cupertino-taxes.vercel.app"; // Replace with "https://your-frontend.vercel.app" in production
+// Log current environment
+console.log("Running in environment:", process.env.NODE_ENV || "development");
+
+// CORS Configuration
+const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN || "https://cupertino-taxes.vercel.app";
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
 // Serve images from the /dist/images directory
-const imagesPath = path.resolve(__dirname, "../images");
-console.log("Serving images from:", imagesPath); // Log the resolved path
+const imagesPath = path.resolve(__dirname, "images");
+console.log("Serving images from:", imagesPath);
 app.use("/images", express.static(imagesPath));
 
 // Error Handling Middleware for Async Functions
