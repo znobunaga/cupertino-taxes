@@ -81,4 +81,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-console.log("Resolved images path:", imagesPath);
+app.get("/test-image", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "images", "barry-chang.jpg"));
+});
+
