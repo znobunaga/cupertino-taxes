@@ -21,7 +21,7 @@ const pool = new Pool({
 console.log("Running in environment:", process.env.NODE_ENV || "development");
 
 // CORS Configuration
-const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN || "https://cupertino-taxes.vercel.app";
+const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN;
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
