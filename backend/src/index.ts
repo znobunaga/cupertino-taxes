@@ -29,7 +29,7 @@ const asyncHandler =
     fn(req, res, next).catch(next);
   };
 
-// Test Database Connection
+// Test Database Connection Endpoint
 app.get(
   "/api/test-db",
   asyncHandler(async (req: Request, res: Response) => {
@@ -64,12 +64,26 @@ app.get(
 
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-  const error = err as Error; // Explicitly cast to Error
+  const error = err as Error;
   console.error("Unhandled error:", error.message);
-  res.status(500).json({ error: "Internal server error" });
+  res.status(500).json({
+    error: process.env.NODE_ENV === "production" ? "Internal server error" : error.message,
+  });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Test database connection before starting the server
+(async () => {
+  try {
+    const client = await pool.connect();
+    console.log("Connected to the database successfully.");
+    client.release();
+
+    // Start the server only if the database connection is successful
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    process.exit(1); // Exit the application if the database connection fails
+  }
+})();
