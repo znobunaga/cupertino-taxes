@@ -25,10 +25,10 @@ const CORS_ALLOWED_ORIGIN = process.env.CORS_ORIGIN;
 app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
-// Serve images from the /dist/images directory
-const imagesPath = path.resolve(__dirname, "images");
-console.log("Serving images from:", imagesPath);
-app.use("/images", express.static(imagesPath));
+// Commented Out: Serve images from the /dist/images directory
+// const imagesPath = path.resolve(__dirname, "images");
+// console.log("Serving images from:", imagesPath);
+// app.use("/images", express.static(imagesPath));
 
 // Error Handling Middleware for Async Functions
 const asyncHandler =
@@ -70,15 +70,15 @@ app.get(
   })
 );
 
-// Debug Route for Images Path
-app.get("/debug-images-path", (req, res) => {
-  res.json({ resolvedImagesPath: imagesPath });
-});
+// Commented Out: Debug Route for Images Path
+// app.get("/debug-images-path", (req, res) => {
+//   res.json({ resolvedImagesPath: imagesPath });
+// });
 
-// Test Serving a Single Image
-app.get("/test-image", (req, res) => {
-  res.sendFile(path.resolve(imagesPath, "barry-chang.jpg"));
-});
+// Commented Out: Test Serving a Single Image
+// app.get("/test-image", (req, res) => {
+//   res.sendFile(path.resolve(imagesPath, "barry-chang.jpg"));
+// });
 
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
