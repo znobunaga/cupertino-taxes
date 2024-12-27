@@ -52,7 +52,7 @@ app.get(
   })
 );
 
-// Tax Records Endpoint
+// council member Endpoint
 app.get(
   "/api/council_members",
   asyncHandler(async (req: Request, res: Response) => {
