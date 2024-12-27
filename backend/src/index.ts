@@ -56,7 +56,7 @@ app.get(
 app.get(
   "/api/council-members",
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
+    const result = await pool.query("SELECT * FROM council_members ORDER BY id ASC");
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No council members found." });
     }
