@@ -9,7 +9,7 @@
     "rootDir": "src",
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]  // Add this line here
+    "types": ["node"]  // Add this line her
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
