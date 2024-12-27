@@ -52,6 +52,18 @@ app.get(
   })
 );
 
+// Tax Records Endpoint
+app.get(
+  "/api/council_members",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT * FROM tax_records ORDER BY id ASC");
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No council members found." });
+    }
+    return res.json(result.rows);
+  })
+);
+
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   const error = err as Error; // Explicitly cast to Error
