@@ -23,7 +23,7 @@ app.use(cors({ origin: CORS_ALLOWED_ORIGIN }));
 app.use(express.json());
 
 // Serve images from the /dist/images directory
-const imagesPath = path.resolve(__dirname, "images");
+const imagesPath = path.resolve(__dirname, "../images");
 console.log("Serving images from:", imagesPath); // Log the resolved path
 app.use("/images", express.static(imagesPath));
 
@@ -35,10 +35,13 @@ const asyncHandler =
   };
 
 // Test Database Connection
-app.get("/api/test-db", asyncHandler(async (req: Request, res: Response) => {
-  const result = await pool.query("SELECT NOW()");
-  return res.json({ message: "Database connection successful!", time: result.rows[0].now });
-}));
+app.get(
+  "/api/test-db",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT NOW()");
+    return res.json({ message: "Database connection successful!", time: result.rows[0].now });
+  })
+);
 
 // Tax Records Endpoint
 app.get(
@@ -69,6 +72,11 @@ app.get("/debug-images-path", (req, res) => {
   res.json({ resolvedImagesPath: imagesPath });
 });
 
+// Test Serving a Single Image
+app.get("/test-image", (req, res) => {
+  res.sendFile(path.resolve(imagesPath, "barry-chang.jpg"));
+});
+
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   const error = err as Error; // Explicitly cast to Error
@@ -80,8 +88,3 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-app.get("/test-image", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "images", "barry-chang.jpg"));
-});
-
