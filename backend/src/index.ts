@@ -62,6 +62,19 @@ app.get(
   })
 );
 
+// Projects Endpoint
+app.get(
+  "/api/projects",
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await pool.query("SELECT * FROM projects ORDER BY id ASC");
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No projects found." }); // Corrected error message
+    }
+    res.json(result.rows);
+  })
+);
+
+
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   const error = err as Error;
