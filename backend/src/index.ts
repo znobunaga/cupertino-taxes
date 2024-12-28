@@ -8,6 +8,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Parse the PORT to ensure it's a number
+const port = typeof PORT === "string" ? parseInt(PORT, 10) : PORT;
+
 // PostgreSQL Pool Configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -74,7 +77,6 @@ app.get(
   })
 );
 
-
 // Error Handling Middleware
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   const error = err as Error;
@@ -92,8 +94,8 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     client.release();
 
     // Start the server only if the database connection is successful
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server is running on port ${port}`);
     });
   } catch (error) {
     console.error("Error connecting to the database:", error);
