@@ -37,9 +37,9 @@ frontend/dist/
 frontend/coverage/
 backend/coverage/
 
-# Production
-frontend/build/
-backend/build/
+# Allow backend/dist/ to be tracked
+!backend/dist/
+!backend/dist/index.js
 
 # Misc
 .env.local
@@ -47,6 +47,7 @@ backend/build/
 .env.test.local
 .env.production.local
 
-# Ignore compiled TypeScript files in backend
+# Ignore compiled TypeScript files, except those in dist/
 backend/**/*.js
+!backend/dist/**/*.js
 backend/**/*.js.map
