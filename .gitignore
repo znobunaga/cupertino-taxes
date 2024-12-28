@@ -22,7 +22,6 @@ Thumbs.db
 # Build and output directories
 frontend/build/
 frontend/dist/
-backend/dist/
 
 # Temporary files and caches
 *.tmp
